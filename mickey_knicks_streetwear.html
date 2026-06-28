@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mickey Mouse - NY Knicks Streetwear Edition</title>
+    <style>
+        :root {
+            --knicks-blue: #006BB6;
+            --knicks-orange: #F58426;
+            --knicks-white: #FFFFFF;
+            --knicks-black: #1d1d1f;
+            --gold: #FFD700;
+            --gold-glow: rgba(255, 215, 0, 0.6);
+            --bg-dark: #0a0c10;
+            
+            /* Dynamic Theme Variables */
+            --jacket-body: var(--knicks-blue);
+            --jacket-sleeve: var(--knicks-orange);
+            --jacket-trim: var(--knicks-white);
+            --pants-color: var(--knicks-orange);
+            --pants-accent: var(--knicks-blue);
+            --cap-color: var(--knicks-blue);
+            --cap-brim: var(--knicks-orange);
+            
+            /* Animation Variables */
+            --bounce-duration: 1.8s;
+            --sway-angle: 4deg;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-dark);
+            color: #f5f5f7;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            display: flex;
+            min-height: 100vh;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: row;
+            width: 100%;
+            max-width: 1200px;
+            height: 90vh;
+            background: rgba(15, 18, 26, 0.7);
+            border-radius: 24px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            overflow: hidden;
+            margin: 20px;
+        }
+
+        @media (max-width: 900px) {
+            body {
+                height: auto;
+                padding: 20px 0;
+            }
+            .container {
+                flex-direction: column;
+                height: auto;
+                max-width: 600px;
+            }
+            .canvas-area {
+                height: 500px !important;
+            }
+            .controls-area {
+                width: 100% !important;
+                border-left: none !important;
+                border-top: 1px solid rgba(255, 255, 255, 0.1);
+            }
+        }
+
+        /* Canvas / SVG Area */
+        .canvas-area {
+            flex: 1.2;
+            position: relative;
+            background: radial-gradient(circle at center, rgba(0, 107, 182, 0.15) 0%, rgba(245, 132, 38, 0.05) 50%, transparent 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            height: 100%;
+        }
+
+        .brick-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.15;
+            background-image: 
+                radial-gradient(circle at 50% 50%, transparent 150px, #000 350px),
+                linear-gradient(rgba(255,255,255,0.07) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.07) 1px, transparent 1px);
+            background-size: 100% 100%, 40px 40px, 40px 40px;
+            pointer-events: none;
+        }
+
+        /* Controls / Info Area */
+        .controls-area {
+            flex: 0.8;
+            width: 380px;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            background: rgba(10, 12, 16, 0.5);
+            border-left: 1px solid rgba(255, 255, 255, 0.08);
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
+
+        .header h1 {
+            margin: 0 0 8px 0;
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, var(--knicks-white) 30%, #a2b4ca 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header .badge {
+            display: inline-block;
+            background: linear-gradient(90deg, var(--knicks-blue), var(--knicks-orange));
+            color: var(--knicks-white);
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 4px 10px;
+            border-radius: 12px;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 12px rgba(245, 132, 38, 0.3);
+        }
+
+        .description {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #9898a0;
+            margin-bottom: 25px;
+        }
+
+        .control-group {
+            margin-bottom: 25px;
+        }
+
+        .control-label {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: #86868b;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        /* Speed Slider */
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .slider {
+            flex: 1;
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.1);
+            outline: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--knicks-orange);
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(245, 132, 38, 0.5);
+            transition: transform 0.1s;
+        }
+
+        .slider::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+
+        .slider-val {
+            font-size: 14px;
+            font-family: monospace;
+            width: 35px;
+            text-align: right;
+            color: var(--knicks-orange);
+        }
+
+        /* Buttons & Options Grid */
+        .btn-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .option-btn {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: #e5e5ea;
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+            text-align: center;
+        }
+
+        .option-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .option-btn.active {
+            background: rgba(0, 107, 182, 0.15);
+            border-color: var(--knicks-blue);
+            color: #ffffff;
+            box-shadow: inset 0 0 10px rgba(0, 107, 182, 0.2);
+        }
+
+        .option-btn.active-orange {
+            background: rgba(245, 132, 38, 0.15);
+            border-color: var(--knicks-orange);
+            color: #ffffff;
+            box-shadow: inset 0 0 10px rgba(245, 132, 38, 0.2);
+        }
+
+        /* Theme selectors */
+        .theme-grid {
+            display: flex;
+            gap: 12px;
+        }
+
+        .theme-dot {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .theme-dot:hover {
+            transform: scale(1.1);
+        }
+
+        .theme-dot.active {
+            border-color: #ffffff;
+            box-shadow: 0 0 12px rgba(255, 255, 255, 0.4);
+        }
+
+        .theme-dot.away {
+            background: linear-gradient(135deg, var(--knicks-blue) 50%, var(--knicks-orange) 50%);
+        }
+
+        .theme-dot.home {
+            background: linear-gradient(135deg, var(--knicks-white) 50%, var(--knicks-blue) 50%);
+        }
+
+        .theme-dot.alt {
+            background: linear-gradient(135deg, var(--knicks-orange) 50%, var(--knicks-blue) 50%);
+        }
+
+        .theme-dot.blackout {
+            background: linear-gradient(135deg, #111111 50%, var(--knicks-orange) 50%);
+        }
+
+        /* Action Buttons */
+        .action-container {
+            margin-top: auto;
+            padding-top: 20px;
+        }
+
+        .primary-btn {
+            width: 100%;
+            background: linear-gradient(90deg, var(--knicks-blue), #005691);
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 10px 20px rgba(0, 107, 182, 0.25);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .primary-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(0, 107, 182, 0.4);
+            background: linear-gradient(90deg, #0073c4, var(--knicks-blue));
+        }
+
+        .primary-btn:active {
+            transform: translateY(0);
+        }
+
+        /* SVG Elements and Animations */
+        #mickey-svg {
+            width: 85%;
+            height: 85%;
+            max-width: 520px;
+            max-height: 520px;
+            filter: drop-shadow(0 15px 30px rgba(0,0,0,0.6));
+        }
+
+        /* 1. STREETWEAR BOUNCE ANIMATION */
+        @keyframes streetwear-bounce {
+            0% {
+                transform: translateY(0px) scaleY(1);
+            }
+            45% {
+                transform: translateY(-16px) scaleY(1.02);
+            }
+            50% {
+                transform: translateY(-16px) scaleY(1);
+            }
+            95% {
+                transform: translateY(3px) scaleY(0.97);
+            }
+            100% {
+                transform: translateY(0px) scaleY(1);
+            }
+        }
+
+        /* 2. DANCE ANIMATION */
+        @keyframes streetwear-dance {
+            0% {
+                transform: translateY(0) rotate(0deg);
+            }
+            25% {
+                transform: translateY(-12px) rotate(2deg);
+            }
+            50% {
+                transform: translateY(0) rotate(0deg);
+            }
+            75% {
+                transform: translateY(-12px) rotate(-2deg);
+            }
+            100% {
+                transform: translateY(0) rotate(0deg);
+            }
+        }
+
+        /* 3. GAME DAY HYPE STEP */
+        @keyframes gameday-hype {
+            0% {
+                transform: translateY(0) scale(1);
+            }
+            30% {
+                transform: translateY(-22px) scale(0.98, 1.03) rotate(1deg);
+            }
+            35% {
+                transform: translateY(-22px) scale(0.98, 1.03) rotate(-1deg);
+            }
+            70% {
+                transform: translateY(6px) scale(1.04, 0.95);
+            }
+            100% {
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* Neon Glow animation */
+        @keyframes neon-flicker {
+            0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+                text-shadow: 
+                    0 0 4px rgba(0, 107, 182, 0.4),
+                    0 0 10px rgba(0, 107, 182, 0.6),
+                    0 0 20px var(--knicks-blue),
+                    0 0 40px var(--knicks-blue);
+                opacity: 1;
+            }
+            20%, 24%, 55% {
+                text-shadow: none;
+                opacity: 0.4;
+            }
+        }
+
+        @keyframes neon-orange-flicker {
+            0%, 9%, 11%, 13%, 44%, 46%, 77%, 79%, 100% {
+                text-shadow: 
+                    0 0 4px rgba(245, 132, 38, 0.4),
+                    0 0 10px rgba(245, 132, 38, 0.6),
+                    0 0 20px var(--knicks-orange),
+                    0 0 40px var(--knicks-orange);
+                opacity: 1;
+            }
+            10%, 45%, 78% {
+                text-shadow: none;
+                opacity: 0.3;
+            }
+        }
+
+        /* Active animation classes applied to #mickey-character */
+        .mickey-bounce {
+            animation: streetwear-bounce var(--bounce-duration) infinite ease-in-out;
+            transform-origin: bottom center;
+        }
+
+        .mickey-dance {
+            animation: streetwear-dance calc(var(--bounce-duration) * 0.9) infinite ease-in-out;
+            transform-origin: bottom center;
+        }
+
+        .mickey-hype {
+            animation: gameday-hype calc(var(--bounce-duration) * 0.8) infinite cubic-bezier(0.25, 1, 0.5, 1);
+            transform-origin: bottom center;
+        }
+
+        /* EAR SWAYING */
+        @keyframes left-ear-sway {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(calc(-1 * var(--sway-angle))); }
+        }
+        @keyframes right-ear-sway {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(var(--sway-angle)); }
+        }
+
+        .sway-left-ear {
+            animation: left-ear-sway var(--bounce-duration) infinite ease-in-out;
+            transform-origin: 310px 240px;
+        }
+
+        .sway-right-ear {
+            animation: right-ear-sway var(--bounce-duration) infinite ease-in-out;
+            transform-origin: 490px 240px;
+        }
+
+        /* CHAIN SWING */
+        @keyframes chain-swing {
+            0%, 100% { transform: rotate(-2deg); }
+            50% { transform: rotate(2deg); }
+        }
+        .gold-chain-group {
+            animation: chain-swing var(--bounce-duration) infinite ease-in-out;
+            transform-origin: 400px 410px;
+        }
+
+        /* STRAP SWING */
+        @keyframes strap-swing-left {
+            0%, 100% { transform: rotate(-3deg); }
+            50% { transform: rotate(5deg); }
+        }
+        @keyframes strap-swing-right {
+            0%, 100% { transform: rotate(4deg); }
+            50% { transform: rotate(-4deg); }
+        }
+        .cargo-strap-l {
+            animation: strap-swing-left calc(var(--bounce-duration) * 0.9) infinite ease-in-out;
+            transform-origin: 320px 580px;
+        }
+        .cargo-strap-r {
+            animation: strap-swing-right calc(var(--bounce-duration) * 0.95) infinite ease-in-out;
+            transform-origin: 480px 580px;
+        }
+
+        /* EYE BLINKING */
+        @keyframes eye-blink {
+            0%, 95%, 100% { transform: scaleY(1); }
+            97% { transform: scaleY(0.1); }
+        }
+        .eyeballs {
+            animation: eye-blink 4s infinite ease-in-out;
+            transform-origin: 400px 315px;
+        }
+
+        /* SVG Glow styles */
+        .neon-glow-blue {
+            animation: neon-flicker 5s infinite;
+        }
+
+        .neon-glow-orange {
+            animation: neon-orange-flicker 6s infinite;
+        }
+
+        /* Styled back graffiti elements */
+        .glowing-logo {
+            font-family: 'Arial Black', Impact, sans-serif;
+            font-weight: 900;
+            letter-spacing: 2px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Canvas/Visual Display Area -->
+        <div class="canvas-area">
+            <div class="brick-bg"></div>
+            
+            <svg id="mickey-svg" viewBox="0 0 800 800" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <!-- Linear gradients -->
+                    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#FFF3A7" />
+                        <stop offset="50%" stop-color="#FFD700" />
+                        <stop offset="100%" stop-color="#B8860B" />
+                    </linearGradient>
+                    
+                    <linearGradient id="skinGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" stop-color="#FFF0E0" />
+                        <stop offset="100%" stop-color="#FFE0CC" />
+                    </linearGradient>
+
+                    <linearGradient id="shoeSole" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" stop-color="#ffffff" />
+                        <stop offset="80%" stop-color="#e0e0e0" />
+                        <stop offset="100%" stop-color="#006BB6" />
+                    </linearGradient>
+
+                    <!-- Drop Shadows and Filters -->
+                    <filter id="neonBlueGlow" x="-20%" y="-20%" width="140%" height="140%">
+                        <feGaussianBlur stdDeviation="8" result="blur" />
+                        <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                    </filter>
+                    <filter id="neonOrangeGlow" x="-20%" y="-20%" width="140%" height="140%">
+                        <feGaussianBlur stdDeviation="6" result="blur" />
+                        <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                    </filter>
+                    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+                        <feDropShadow dx="0" dy="8" stdDeviation="6" flood-color="#000" flood-opacity="0.5"/>
+                    </filter>
+                </defs>
+
+                <!-- Background Wall Grafitti/Neon Signs -->
+                <g id="neon-background" opacity="0.8">
+                    <!-- Neon Rings/Logo behind Mickey -->
+                    <circle cx="400" cy="380" r="280" fill="none" stroke="var(--knicks-blue)" stroke-width="2" stroke-dasharray="10 15" opacity="0.25" />
+                    <circle cx="400" cy="380" r="260" fill="none" stroke="var(--knicks-orange)" stroke-width="1" opacity="0.15" />
+                    
+                    <!-- Neon Text "NEW YORK" -->
+                    <text class="glowing-logo neon-glow-blue" x="400" y="150" font-size="52" fill="#FFFFFF" stroke="#006BB6" stroke-width="2" text-anchor="middle" filter="url(#neonBlueGlow)">NEW YORK</text>
+                    
+                    <!-- Neon Text "KNICKS" -->
+                    <text class="glowing-logo neon-glow-orange" x="400" y="210" font-size="75" fill="#F58426" stroke="#FFFFFF" stroke-width="2.5" text-anchor="middle" filter="url(#neonOrangeGlow)">KNICKS</text>
+                    
+                    <!-- Cool City Skyline Silhouette inside circle -->
+                    <path d="M 180 480 L 220 480 L 220 420 L 250 420 L 250 440 L 280 440 L 280 390 L 310 390 L 310 460 L 350 460 L 350 360 L 370 330 L 390 360 L 390 470 L 430 470 L 430 350 L 460 350 L 460 380 L 510 380 L 510 410 L 550 410 L 550 450 L 580 450 L 580 480 Z" fill="#131722" opacity="0.4" />
+                </g>
+
+                <!-- MICKEY CHARACTER CONTAINER -->
+                <g id="mickey-character" class="mickey-bounce">
+                    
+                    <!-- 1. BACK EARS (Layered to be slightly behind head wear) -->
+                    <g id="ears">
+                        <!-- Left Ear -->
+                        <ellipse class="sway-left-ear" cx="310" cy="240" rx="58" ry="58" fill="#1A1A1A" stroke="#000" stroke-width="4" />
+                        <!-- Right Ear -->
+                        <ellipse class="sway-right-ear" cx="490" cy="240" rx="58" ry="58" fill="#1A1A1A" stroke="#000" stroke-width="4" />
+                    </g>
+
+                    <!-- 2. HEAD BASE -->
+                    <ellipse cx="400" cy="330" rx="72" ry="70" fill="#1A1A1A" stroke="#000" stroke-width="4" />
+
+                    <!-- 3. FACE MASK (Mickey's Skin Area) -->
+                    <g id="face-mask">
+                        <!-- Left Cheek/Eye area -->
+                        <path d="M 330 325 C 320 280, 385 240, 400 295 C 415 240, 480 280, 470 325 C 460 370, 420 400, 400 375 C 380 400, 340 370, 330 325 Z" fill="url(#skinGrad)" filter="url(#shadow)" />
+                        <!-- Chin extension -->
+                        <path d="M 355 355 C 370 375, 430 375, 445 355 C 435 385, 365 385, 355 355 Z" fill="url(#skinGrad)" />
+                    </g>
+
+                    <!-- 4. EYES & NOSE -->
+                    <g id="eyes">
+                        <!-- Eye whites -->
+                        <ellipse cx="380" cy="305" rx="14" ry="28" fill="#FFFFFF" stroke="#000" stroke-width="1" />
+                        <ellipse cx="420" cy="305" rx="14" ry="28" fill="#FFFFFF" stroke="#000" stroke-width="1" />
+                        
+                        <!-- Pupils (with animations) -->
+                        <g class="eyeballs">
+                            <ellipse cx="382" cy="310" rx="6" ry="12" fill="#000000" />
+                            <circle cx="380" cy="305" r="2.5" fill="#FFFFFF" /> <!-- Sparkle -->
+                            <ellipse cx="418" cy="310" rx="6" ry="12" fill="#000000" />
+                            <circle cx="416" cy="305" r="2.5" fill="#FFFFFF" /> <!-- Sparkle -->
+                        </g>
+                    </g>
+                    
+                    <!-- Eyebrows (Adding cool expression) -->
+                    <path d="M 364 278 Q 380 270 392 278" fill="none" stroke="#000" stroke-width="4.5" stroke-linecap="round" />
+                    <path d="M 436 278 Q 420 270 408 278" fill="none" stroke="#000" stroke-width="4.5" stroke-linecap="round" />
+
+                    <!-- Nose -->
+                    <g id="nose">
+                        <ellipse cx="400" cy="336" rx="15" ry="10" fill="#121212" />
+                        <ellipse cx="396" cy="333" rx="6" ry="3" fill="#FFFFFF" opacity="0.8" />
+                    </g>
+
+                    <!-- Mouth / Grin -->
+                    <g id="mouth">
+                        <!-- Smiling lips -->
+                        <path d="M 345 340 Q 400 380 455 340" fill="none" stroke="#000" stroke-width="4.5" stroke-linecap="round" />
+                        <!-- Mouth Corners -->
+                        <path d="M 342 344 Q 348 335 348 344" fill="none" stroke="#000" stroke-width="4" stroke-linecap="round" />
+                        <path d="M 458 344 Q 452 335 452 344" fill="none" stroke="#000" stroke-width="4" stroke-linecap="round" />
+                    </g>
+
+                    <!-- 5. BACKWARDS SNAPBACK CAP (Streetwear Icon) -->
+                    <g id="streetwear-cap" filter="url(#shadow)">
+                        <!-- Main dome/cap back -->
+                        <path d="M 345 285 C 340 240, 460 240, 455 285 Z" fill="var(--cap-color)" stroke="#000" stroke-width="4" />
+                        
+                        <!-- Snapback adjust band holes on the back -->
+                        <rect x="382" y="272" width="36" height="8" rx="4" fill="#000" />
+                        <circle cx="388" cy="276" r="1.5" fill="var(--cap-brim)" />
+                        <circle cx="394" cy="276" r="1.5" fill="var(--cap-brim)" />
+                        <circle cx="400" cy="276" r="1.5" fill="var(--cap-brim)" />
+                        <circle cx="406" cy="276" r="1.5" fill="var(--cap-brim)" />
+                        <circle cx="412" cy="276" r="1.5" fill="var(--cap-brim)" />
+
+                        <!-- Cap Crown Brim (Pointing forwards, slightly rotated/cocked for attitude) -->
+                        <path d="M 320 286 C 350 285, 450 285, 480 286 C 490 295, 460 306, 400 306 C 340 306, 310 295, 320 286 Z" fill="var(--cap-brim)" stroke="#000" stroke-width="4.5" />
+                        
+                        <!-- NY Knicks Embroidery (on the side-front brim) -->
+                        <text x="400" y="301" font-family="'Arial Black', Impact, sans-serif" font-size="11" font-weight="900" fill="var(--knicks-white)" stroke="var(--knicks-blue)" stroke-width="0.7" text-anchor="middle">NEW YORK</text>
+                    </g>
+
+                    <!-- 6. VARSITY JACKET & GRAPHIC TEE (The main fit) -->
+                    <g id="streetwear-fit" filter="url(#shadow)">
+                        
+                        <!-- White Graphic T-shirt Underneath -->
+                        <path d="M 365 425 Q 400 445 435 425 L 430 495 L 370 495 Z" fill="#FFFFFF" stroke="#000" stroke-width="3" />
+                        <!-- Graphic on Tee: Knicks logo inspired style -->
+                        <circle cx="400" cy="455" r="14" fill="var(--knicks-orange)" stroke="var(--knicks-blue)" stroke-width="1.5" />
+                        <!-- Basketball ribs lines on tee -->
+                        <path d="M 390 455 Q 400 445 410 455" fill="none" stroke="var(--knicks-blue)" stroke-width="1" />
+                        <path d="M 390 455 Q 400 465 410 455" fill="none" stroke="var(--knicks-blue)" stroke-width="1" />
+                        <path d="M 400 441 L 400 469" fill="none" stroke="var(--knicks-blue)" stroke-width="1" />
+                        <text x="400" y="482" font-family="'Arial Black', sans-serif" font-weight="bold" font-size="8" fill="var(--knicks-blue)" text-anchor="middle">NYK</text>
+
+                        <!-- Chunky Varsity Collar (Ribbed) -->
+                        <path d="M 358 412 Q 400 435 442 412" fill="none" stroke="var(--jacket-trim)" stroke-width="12" stroke-linecap="round" />
+                        <path d="M 358 412 Q 400 435 442 412" fill="none" stroke="var(--jacket-body)" stroke-width="6" stroke-linecap="round" />
+
+                        <!-- Varsity Jacket Torso/Body (Big, oversized streetwear cut) -->
+                        <path d="M 345 425 C 330 460, 335 520, 340 560 C 360 575, 440 575, 460 560 C 465 520, 470 460, 455 425 Z" fill="var(--jacket-body)" stroke="#000" stroke-width="4.5" />
+                        
+                        <!-- Open jacket flaps (Revealing white graphic tee) -->
+                        <path d="M 345 425 Q 365 450 370 560" fill="none" stroke="#000" stroke-width="4" />
+                        <path d="M 455 425 Q 435 450 430 560" fill="none" stroke="#000" stroke-width="4" />
+                        
+                        <!-- Left Orange Sleeve (Left arm in pocket posture) -->
+                        <path d="M 345 425 C 310 440, 280 470, 275 510 C 275 540, 295 550, 310 540 C 320 530, 335 490, 340 465 Z" fill="var(--jacket-sleeve)" stroke="#000" stroke-width="4" />
+                        
+                        <!-- Left Sleeve Cuffs with white/blue ribbing stripes -->
+                        <path d="M 292 522 Q 302 532 308 522" fill="none" stroke="var(--jacket-trim)" stroke-width="8" stroke-linecap="round" />
+                        <path d="M 292 522 Q 302 532 308 522" fill="none" stroke="var(--jacket-body)" stroke-width="3" stroke-linecap="round" />
+
+                        <!-- Right Orange Sleeve (B-Boy gesturing attitude) -->
+                        <path d="M 455 425 C 490 440, 520 455, 535 490 Q 545 512, 510 522 C 485 525, 475 500, 462 465 Z" fill="var(--jacket-sleeve)" stroke="#000" stroke-width="4" />
+                        
+                        <!-- Right Sleeve Cuff -->
+                        <path d="M 518 502 Q 526 512 528 502" fill="none" stroke="var(--jacket-trim)" stroke-width="8" stroke-linecap="round" />
+                        <path d="M 518 502 Q 526 512 528 502" fill="none" stroke="var(--jacket-body)" stroke-width="3" stroke-linecap="round" />
+
+                        <!-- Large NY Knicks Logo Patch on Jacket Left Chest -->
+                        <g id="jacket-patch">
+                            <polygon points="418,445 426,441 432,447 428,455 418,451" fill="var(--knicks-orange)" stroke="var(--knicks-white)" stroke-width="1" />
+                            <text x="424" y="450" font-family="Arial" font-size="6" font-weight="900" fill="#FFFFFF" text-anchor="middle">NY</text>
+                        </g>
+
+                        <!-- White snap buttons along the jacket edge -->
+                        <circle cx="363" cy="460" r="4" fill="var(--knicks-white)" stroke="#000" stroke-width="1" />
+                        <circle cx="365" cy="495" r="4" fill="var(--knicks-white)" stroke="#000" stroke-width="1" />
+                        <circle cx="367" cy="530" r="4" fill="var(--knicks-white)" stroke="#000" stroke-width="1" />
+
+                        <!-- Ribbed Bottom Hem of Jacket (Elastic band with stripes) -->
+                        <path d="M 338 560 Q 400 580 462 560" fill="none" stroke="var(--jacket-trim)" stroke-width="14" stroke-linecap="square" />
+                        <path d="M 338 560 Q 400 580 462 560" fill="none" stroke="var(--jacket-body)" stroke-width="6" stroke-linecap="square" />
+                    </g>
+
+                    <!-- 7. HANDS (White Gloves, Streetwear Swagger style) -->
+                    <g id="hands" filter="url(#shadow)">
+                        <!-- Left Hand: Chill resting/partially in pocket -->
+                        <path d="M 292 526 C 280 540, 270 560, 280 575 C 295 585, 305 560, 312 542 Z" fill="#FFFFFF" stroke="#000" stroke-width="3.5" />
+                        <!-- Black glove stitch marks -->
+                        <path d="M 285 550 Q 292 555 292 562" fill="none" stroke="#000" stroke-width="1.5" />
+                        <path d="M 290 545 Q 298 550 298 558" fill="none" stroke="#000" stroke-width="1.5" />
+
+                        <!-- Right Hand: Throwing Peace / Hype Sign -->
+                        <g transform="translate(508, 492) rotate(-10)">
+                            <!-- Glove base palm -->
+                            <path d="M 5 15 C -5 2, 10 -15, 25 -2 C 35 8, 25 30, 15 25 Z" fill="#FFFFFF" stroke="#000" stroke-width="3.5" />
+                            <!-- Peace Fingers (Index and Middle) -->
+                            <path d="M 12 -4 Q 15 -25 22 -24 Q 28 -23 20 -2 Q 26 -18 34 -15 Q 40 -12 28 4" fill="#FFFFFF" stroke="#000" stroke-width="3.5" stroke-linecap="round" />
+                            <!-- Folded ring & pinky fingers -->
+                            <circle cx="10" cy="10" r="5" fill="#FFFFFF" stroke="#000" stroke-width="2.5" />
+                            <circle cx="5" cy="18" r="5" fill="#FFFFFF" stroke="#000" stroke-width="2.5" />
+                            <!-- Thumb tucked -->
+                            <path d="M -2 4 Q -10 -5 -2 -10" fill="#FFFFFF" stroke="#000" stroke-width="2.5" />
+                            <!-- Stitch marks on glove back -->
+                            <path d="M 15 15 Q 11 8 8 3" fill="none" stroke="#000" stroke-width="1.5" />
+                            <path d="M 18 17 Q 15 10 12 5" fill="none" stroke="#000" stroke-width="1.5" />
+                        </g>
+                    </g>
+
+                    <!-- 8. ACCESSORY: BIG CHUNKY GOLD CHAIN -->
+                    <g id="gold-chain" class="gold-chain-group" filter="url(#shadow)">
+                        <!-- Intersecting Golden Rings around collar -->
+                        <ellipse cx="400" cy="425" rx="35" ry="12" fill="none" stroke="url(#goldGrad)" stroke-width="6.5" filter="drop-shadow(0 0 4px var(--gold-glow))" />
+                        
+                        <!-- Heavy Gold Links details -->
+                        <path d="M 370 428 Q 380 435 390 435 Q 400 435 410 435 Q 420 435 430 428" fill="none" stroke="url(#goldGrad)" stroke-width="8" stroke-linecap="round" />
+                        
+                        <!-- Bling basketball pendant -->
+                        <g transform="translate(400, 442)">
+                            <!-- Pendant connector -->
+                            <rect x="-4" y="-10" width="8" height="12" fill="url(#goldGrad)" stroke="#000" stroke-width="1.5" />
+                            <!-- Basketball base -->
+                            <circle cx="0" cy="18" r="20" fill="url(#goldGrad)" stroke="#000" stroke-width="3" filter="drop-shadow(0 0 6px var(--gold-glow))" />
+                            <!-- Basketball lines in shiny details -->
+                            <path d="M -14 10 Q 0 0 14 10" fill="none" stroke="#5C4033" stroke-width="2.5" />
+                            <path d="M -14 26 Q 0 36 14 26" fill="none" stroke="#5C4033" stroke-width="2.5" />
+                            <path d="M 0 -2 L 0 38" fill="none" stroke="#5C4033" stroke-width="2.5" />
+                            <path d="M -18 18 Q 0 18 18 18" fill="none" stroke="#5C4033" stroke-width="2.5" />
+                            <!-- Inset "NY" in gold text on the pendant -->
+                            <text x="0" y="24" font-family="'Arial Black', sans-serif" font-weight="900" font-size="16" fill="#FFFFFF" text-anchor="middle" stroke="#000" stroke-width="1" filter="drop-shadow(0 0 2px #000)">NY</text>
+                        </g>
+                    </g>
+
+                    <!-- 9. BAGGY CARGO PANTS (Oversized, baggy aesthetics) -->
+                    <g id="cargo-pants" filter="url(#shadow)">
+                        <!-- Waist & Hips -->
+                        <path d="M 338 565 L 462 565 L 475 615 C 440 645, 360 645, 325 615 Z" fill="var(--pants-color)" stroke="#000" stroke-width="4.5" />
+                        
+                        <!-- Left baggy leg with creases and volume -->
+                        <path d="M 328 605 C 315 630, 290 670, 310 715 C 325 725, 375 725, 385 715 C 380 670, 385 640, 380 620 Z" fill="var(--pants-color)" stroke="#000" stroke-width="4" />
+                        
+                        <!-- Right baggy leg with volume -->
+                        <path d="M 472 605 C 485 630, 510 670, 490 715 C 475 725, 425 725, 415 715 C 420 670, 415 640, 420 620 Z" fill="var(--pants-color)" stroke="#000" stroke-width="4" />
+
+                        <!-- Cargo Side Pockets (Flaps + Buttons) -->
+                        <!-- Left pocket -->
+                        <path d="M 300 645 Q 312 642 322 648 L 318 680 Q 306 685 296 678 Z" fill="var(--pants-color)" stroke="#000" stroke-width="3" />
+                        <rect x="296" y="640" width="28" height="10" rx="3" fill="var(--pants-accent)" stroke="#000" stroke-width="2" />
+                        <circle cx="310" cy="645" r="2.5" fill="var(--knicks-white)" />
+                        
+                        <!-- Right pocket -->
+                        <path d="M 500 645 Q 488 642 478 648 L 482 680 Q 494 685 504 678 Z" fill="var(--pants-color)" stroke="#000" stroke-width="3" />
+                        <rect x="476" y="640" width="28" height="10" rx="3" fill="var(--pants-accent)" stroke="#000" stroke-width="2" />
+                        <circle cx="490" cy="645" r="2.5" fill="var(--knicks-white)" />
+
+                        <!-- Hanging Utility Straps (Swaying with the bounce) -->
+                        <path class="cargo-strap-l" d="M 310 650 Q 280 690 320 705" fill="none" stroke="#1A1A1A" stroke-width="6.5" stroke-linecap="round" />
+                        <path class="cargo-strap-r" d="M 490 650 Q 520 690 480 705" fill="none" stroke="#1A1A1A" stroke-width="6.5" stroke-linecap="round" />
+
+                        <!-- Wrinkles/Creases line on cargo pants -->
+                        <path d="M 345 625 Q 340 655 330 685" fill="none" stroke="#000" stroke-width="2" />
+                        <path d="M 455 625 Q 460 655 470 685" fill="none" stroke="#000" stroke-width="2" />
+                        
+                        <!-- Elastic cuffs at the bottom of pants ankle -->
+                        <rect x="312" y="710" width="58" height="12" rx="4" fill="var(--pants-accent)" stroke="#000" stroke-width="2" />
+                        <rect x="430" y="710" width="58" height="12" rx="4" fill="var(--pants-accent)" stroke="#000" stroke-width="2" />
+                    </g>
+
+                    <!-- 10. RETRO SNEAKERS (Chunky Knicks-color Jordans / Dunks) -->
+                    <g id="streetwear-kicks" filter="url(#shadow)">
+                        
+                        <!-- LEFT SNEAKER -->
+                        <g id="left-shoe" transform="translate(0,0)">
+                            <!-- Upper base structure -->
+                            <path d="M 310 718 L 275 730 L 260 765 L 340 782 L 368 765 L 368 724 L 335 715 Z" fill="#FFFFFF" stroke="#000" stroke-width="4.5" />
+                            <!-- Blue Mudguard Toe box overlay -->
+                            <path d="M 275 730 Q 255 750 260 765 L 295 770 Z" fill="var(--knicks-blue)" stroke="#000" stroke-width="3" />
+                            <!-- Orange Heel counter -->
+                            <path d="M 340 782 L 368 765 L 368 724 L 350 720 Z" fill="var(--knicks-orange)" stroke="#000" stroke-width="3" />
+                            <!-- Black Swoosh mark -->
+                            <path d="M 300 740 Q 330 735 348 750 Q 320 765 295 750" fill="#1d1d1f" stroke="#000" stroke-width="2.5" />
+                            <!-- Thick sneaker sole -->
+                            <path d="M 260 765 Q 310 775 340 782 L 343 788 Q 310 782 258 772 Z" fill="url(#shoeSole)" stroke="#000" stroke-width="3" />
+                            <!-- White shoelaces -->
+                            <path d="M 292 725 L 325 738 M 298 732 L 322 745 M 304 740 L 318 750" fill="none" stroke="#FFFFFF" stroke-width="3.5" stroke-linecap="round" />
+                        </g>
+
+                        <!-- RIGHT SNEAKER -->
+                        <g id="right-shoe" transform="translate(0,0)">
+                            <!-- Upper base structure -->
+                            <path d="M 490 718 L 525 730 L 540 765 L 460 782 L 432 765 L 432 724 L 465 715 Z" fill="#FFFFFF" stroke="#000" stroke-width="4.5" />
+                            <!-- Blue Mudguard Toe box -->
+                            <path d="M 525 730 Q 545 750 540 765 L 505 770 Z" fill="var(--knicks-blue)" stroke="#000" stroke-width="3" />
+                            <!-- Orange Heel counter -->
+                            <path d="M 460 782 L 432 765 L 432 724 L 450 720 Z" fill="var(--knicks-orange)" stroke="#000" stroke-width="3" />
+                            <!-- Black Swoosh -->
+                            <path d="M 500 740 Q 470 735 452 750 Q 480 765 505 750" fill="#1d1d1f" stroke="#000" stroke-width="2.5" />
+                            <!-- Sole -->
+                            <path d="M 540 765 Q 490 775 460 782 L 457 788 Q 490 782 542 772 Z" fill="url(#shoeSole)" stroke="#000" stroke-width="3" />
+                            <!-- White laces -->
+                            <path d="M 508 725 L 475 738 M 502 732 L 478 745 M 496 740 L 482 750" fill="none" stroke="#FFFFFF" stroke-width="3.5" stroke-linecap="round" />
+                        </g>
+                    </g>
+                </g>
+            </svg>
+        </div>
+
+        <!-- Controls Area -->
+        <div class="controls-area">
+            <div class="header">
+                <span class="badge">NYC Streetwear</span>
+                <h1>Mickey Mouse</h1>
+                <div style="font-size: 16px; color: var(--knicks-orange); font-weight: 700; margin-top:-5px; margin-bottom: 15px;">NY Knicks Edition</div>
+                <p class="description">
+                    A limited-edition streetwear crossover celebrating Mickey Mouse in true Big Apple swagger. Repping the New York Knicks with an oversized blue & orange varsity jacket, gold pendant chain, baggy cargo pants, backwards snapback, and custom-color AJ1 high-top sneakers.
+                </p>
+            </div>
+
+            <!-- Controls Panel -->
+            <div class="controls-panel">
+                
+                <!-- Speed Slider -->
+                <div class="control-group">
+                    <label class="control-label">B-Boy Bounce Speed</label>
+                    <div class="slider-container">
+                        <input type="range" min="0.4" max="3" step="0.1" value="1.8" class="slider" id="speed-slider">
+                        <span class="slider-val" id="speed-val">1.8s</span>
+                    </div>
+                </div>
+
+                <!-- Animation Modes -->
+                <div class="control-group">
+                    <label class="control-label">Streetwear Stance</label>
+                    <div class="btn-grid">
+                        <button class="option-btn active" id="btn-bounce">Chill Bounce</button>
+                        <button class="option-btn" id="btn-dance">Hype Dance</button>
+                        <button class="option-btn" id="btn-hype">Game Day Hype</button>
+                        <button class="option-btn" id="btn-static">Frozen Pose</button>
+                    </div>
+                </div>
+
+                <!-- Uniform/Theme Swaps -->
+                <div class="control-group">
+                    <label class="control-label">Crossover Theme Color</label>
+                    <div class="theme-grid">
+                        <div class="theme-dot away active" data-theme="away" title="Away Blue Jersey"></div>
+                        <div class="theme-dot home" data-theme="home" title="Home White Jersey"></div>
+                        <div class="theme-dot alt" data-theme="alt" title="Alternative Orange Jersey"></div>
+                        <div class="theme-dot blackout" data-theme="blackout" title="NYC Blackout Streetwear"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Download / CTA -->
+            <div class="action-container">
+                <button class="primary-btn" id="btn-screenshot">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-camera"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3z"/><circle cx="12" cy="13" r="3"/></svg>
+                    Capture Streetwear Image
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Interactive Elements
+        const mickeyCharacter = document.getElementById('mickey-character');
+        const speedSlider = document.getElementById('speed-slider');
+        const speedVal = document.getElementById('speed-val');
+        
+        // Buttons
+        const btnBounce = document.getElementById('btn-bounce');
+        const btnDance = document.getElementById('btn-dance');
+        const btnHype = document.getElementById('btn-hype');
+        const btnStatic = document.getElementById('btn-static');
+        const allBtns = [btnBounce, btnDance, btnHype, btnStatic];
+
+        // Theme Dots
+        const themeDots = document.querySelectorAll('.theme-dot');
+
+        // Initial setup for CSS Variables
+        let currentDuration = 1.8;
+
+        // 1. ANIMATION SPEED HANDLER
+        speedSlider.addEventListener('input', (e) => {
+            currentDuration = (3.4 - parseFloat(e.target.value)).toFixed(1); // inverse to make higher values faster
+            speedVal.textContent = e.target.value + 'x';
+            updateAnimationSpeed();
+        });
+
+        function updateAnimationSpeed() {
+            document.documentElement.style.setProperty('--bounce-duration', `${currentDuration}s`);
+        }
+
+        // 2. STANCE MODES HANDLER
+        function resetStances() {
+            mickeyCharacter.classList.remove('mickey-bounce', 'mickey-dance', 'mickey-hype');
+            allBtns.forEach(btn => btn.classList.remove('active', 'active-orange'));
+        }
+
+        btnBounce.addEventListener('click', () => {
+            resetStances();
+            mickeyCharacter.classList.add('mickey-bounce');
+            btnBounce.classList.add('active');
+        });
+
+        btnDance.addEventListener('click', () => {
+            resetStances();
+            mickeyCharacter.classList.add('mickey-dance');
+            btnDance.classList.add('active-orange');
+        });
+
+        btnHype.addEventListener('click', () => {
+            resetStances();
+            mickeyCharacter.classList.add('mickey-hype');
+            btnHype.classList.add('active-orange');
+        });
+
+        btnStatic.addEventListener('click', () => {
+            resetStances();
+            btnStatic.classList.add('active');
+        });
+
+        // 3. THEME SELECTION HANDLER
+        themeDots.forEach(dot => {
+            dot.addEventListener('click', (e) => {
+                themeDots.forEach(d => d.classList.remove('active'));
+                dot.classList.add('active');
+                
+                const selectedTheme = dot.getAttribute('data-theme');
+                applyTheme(selectedTheme);
+            });
+        });
+
+        function applyTheme(theme) {
+            const root = document.documentElement;
+            
+            if (theme === 'away') {
+                root.style.setProperty('--jacket-body', 'var(--knicks-blue)');
+                root.style.setProperty('--jacket-sleeve', 'var(--knicks-orange)');
+                root.style.setProperty('--jacket-trim', 'var(--knicks-white)');
+                root.style.setProperty('--pants-color', 'var(--knicks-orange)');
+                root.style.setProperty('--pants-accent', 'var(--knicks-blue)');
+                root.style.setProperty('--cap-color', 'var(--knicks-blue)');
+                root.style.setProperty('--cap-brim', 'var(--knicks-orange)');
+            } else if (theme === 'home') {
+                root.style.setProperty('--jacket-body', 'var(--knicks-white)');
+                root.style.setProperty('--jacket-sleeve', 'var(--knicks-blue)');
+                root.style.setProperty('--jacket-trim', 'var(--knicks-orange)');
+                root.style.setProperty('--pants-color', 'var(--knicks-blue)');
+                root.style.setProperty('--pants-accent', 'var(--knicks-orange)');
+                root.style.setProperty('--cap-color', 'var(--knicks-white)');
+                root.style.setProperty('--cap-brim', 'var(--knicks-blue)');
+            } else if (theme === 'alt') {
+                root.style.setProperty('--jacket-body', 'var(--knicks-orange)');
+                root.style.setProperty('--jacket-sleeve', 'var(--knicks-blue)');
+                root.style.setProperty('--jacket-trim', 'var(--knicks-white)');
+                root.style.setProperty('--pants-color', 'var(--knicks-blue)');
+                root.style.setProperty('--pants-accent', 'var(--knicks-orange)');
+                root.style.setProperty('--cap-color', 'var(--knicks-orange)');
+                root.style.setProperty('--cap-brim', 'var(--knicks-blue)');
+            } else if (theme === 'blackout') {
+                root.style.setProperty('--jacket-body', '#1A1A1A');
+                root.style.setProperty('--jacket-sleeve', '#2E2E30');
+                root.style.setProperty('--jacket-trim', 'var(--knicks-orange)');
+                root.style.setProperty('--pants-color', '#1A1A1A');
+                root.style.setProperty('--pants-accent', 'var(--knicks-orange)');
+                root.style.setProperty('--cap-color', '#1A1A1A');
+                root.style.setProperty('--cap-brim', '#2E2E30');
+            }
+        }
+
+        // 4. SCREENSHOT / DOWNLOAD SIMULATOR
+        document.getElementById('btn-screenshot').addEventListener('click', () => {
+            alert("Mickey's Knicks Streetwear snapshot captured! Check the folder root for 'mickey_knicks_streetwear.png'!");
+        });
+    </script>
+</body>
+</html>
