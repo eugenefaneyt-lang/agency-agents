@@ -892,7 +892,7 @@
 
         // 1. ANIMATION SPEED HANDLER
         speedSlider.addEventListener('input', (e) => {
-            currentDuration = parseFloat(e.target.value).toFixed(1);
+            currentDuration = parseFloat(parseFloat(e.target.value).toFixed(1));
             speedVal.textContent = currentDuration + 's';
             updateAnimationSpeed();
         });
