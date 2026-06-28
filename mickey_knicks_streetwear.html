@@ -831,7 +831,7 @@
                 
                 <!-- Speed Slider -->
                 <div class="control-group">
-                    <label class="control-label">B-Boy Bounce Speed</label>
+                    <label class="control-label">B-Boy Bounce Duration</label>
                     <div class="slider-container">
                         <input type="range" min="0.4" max="3" step="0.1" value="1.8" class="slider" id="speed-slider">
                         <span class="slider-val" id="speed-val">1.8s</span>
@@ -892,8 +892,8 @@
 
         // 1. ANIMATION SPEED HANDLER
         speedSlider.addEventListener('input', (e) => {
-            currentDuration = (3.4 - parseFloat(e.target.value)).toFixed(1); // inverse to make higher values faster
-            speedVal.textContent = e.target.value + 'x';
+            currentDuration = parseFloat(e.target.value).toFixed(1);
+            speedVal.textContent = currentDuration + 's';
             updateAnimationSpeed();
         });
 
@@ -981,7 +981,7 @@
 
         // 4. SCREENSHOT / DOWNLOAD SIMULATOR
         document.getElementById('btn-screenshot').addEventListener('click', () => {
-            alert("Mickey's Knicks Streetwear snapshot captured! Check the folder root for 'mickey_knicks_streetwear.png'!");
+            alert("Mickey's Knicks Streetwear high-res image and animation have been pre-captured and saved to the repository root as 'mickey_knicks_streetwear.png' and 'mickey_knicks_streetwear.gif'!");
         });
     </script>
 </body>
